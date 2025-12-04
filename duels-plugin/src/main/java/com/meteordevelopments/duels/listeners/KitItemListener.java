@@ -1,5 +1,6 @@
 package com.meteordevelopments.duels.listeners;
 
+import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent;
 import com.meteordevelopments.duels.DuelsPlugin;
 import com.meteordevelopments.duels.Permissions;
 import com.meteordevelopments.duels.arena.ArenaManagerImpl;
@@ -15,20 +16,25 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+
+import static com.github.sirblobman.api.item.ArmorType.CHESTPLATE;
+import static com.github.sirblobman.api.item.ArmorType.HELMET;
 
 /**
  * Prevents players from using kit items outside of a duel by checking
  * for an NBT tag stored in the item by Duels.
  */
 public class KitItemListener implements Listener {
-
-    // Warning sent to player attempting to use kit item
-    private static final String WARNING = StringUtil.color("&4[Duels] Kit contents cannot be used when not in a duel.");
 
     // Warning printed on console
     private static final String WARNING_CONSOLE = "%s has attempted to use a kit item while not in duel, but was prevented by KitItemListener.";
@@ -73,7 +79,7 @@ public class KitItemListener implements Listener {
         }
 
         event.setCurrentItem(null);
-        player.sendMessage(WARNING);
+        player.sendMessage(DuelsPlugin.instance.getLang().getMessage("ERROR.kit-content-warning"));
         Log.warn(String.format(WARNING_CONSOLE, player.getName()));
     }
 
@@ -93,7 +99,7 @@ public class KitItemListener implements Listener {
 
         event.setCancelled(true);
         player.getInventory().remove(item);
-        player.sendMessage(WARNING);
+        player.sendMessage(DuelsPlugin.instance.getLang().getMessage("ERROR.kit-content-warning"));
         Log.warn(String.format(WARNING_CONSOLE, player.getName()));
     }
 
@@ -113,7 +119,7 @@ public class KitItemListener implements Listener {
 
         event.setCancelled(true);
         item.remove();
-        player.sendMessage(WARNING);
+        player.sendMessage(DuelsPlugin.instance.getLang().getMessage("ERROR.kit-content-warning"));
         Log.warn(String.format(WARNING_CONSOLE, player.getName()));
     }
 
@@ -133,7 +139,117 @@ public class KitItemListener implements Listener {
 
         event.setCancelled(true);
         player.getInventory().remove(item);
-        player.sendMessage(WARNING);
+        player.sendMessage(DuelsPlugin.instance.getLang().getMessage("ERROR.kit-content-warning"));
         Log.warn(String.format(WARNING_CONSOLE, player.getName()));
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void on(final PlayerItemConsumeEvent event) {
+        final Player player = event.getPlayer();
+
+        if (isExcluded(player)) {
+            return;
+        }
+
+        final ItemStack item = event.getItem();
+
+        if (!isKitItem(item)) {
+            return;
+        }
+
+        event.setCancelled(true);
+        player.getInventory().remove(item);
+        player.sendMessage(DuelsPlugin.instance.getLang().getMessage("ERROR.kit-content-warning"));
+        Log.warn(String.format(WARNING_CONSOLE, player.getName()));
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void on(final PlayerItemHeldEvent event) {
+        final Player player = event.getPlayer();
+
+        if (isExcluded(player)) {
+            return;
+        }
+
+        final ItemStack item = player.getInventory().getItem(event.getNewSlot());
+
+        if (!isKitItem(item)) {
+            return;
+        }
+
+        event.setCancelled(true);
+        player.getInventory().remove(item);
+        player.sendMessage(DuelsPlugin.instance.getLang().getMessage("ERROR.kit-content-warning"));
+        Log.warn(String.format(WARNING_CONSOLE, player.getName()));
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void on(final PlayerArmorChangeEvent event) {
+        final Player player = event.getPlayer();
+
+        if (isExcluded(player)) {
+            return;
+        }
+
+        final ItemStack item = event.getNewItem();
+
+        if (!isKitItem(item)) {
+            return;
+        }
+
+        player.getInventory().remove(item);
+        switch (event.getSlotType()) {
+            case PlayerArmorChangeEvent.SlotType.HEAD: {
+                player.getEquipment().setHelmet(null);
+                break;
+            }
+            case PlayerArmorChangeEvent.SlotType.CHEST: {
+                player.getEquipment().setChestplate(null);
+                break;
+            }
+            case PlayerArmorChangeEvent.SlotType.LEGS: {
+                player.getEquipment().setLeggings(null);
+                break;
+            }
+            case PlayerArmorChangeEvent.SlotType.FEET: {
+                player.getEquipment().setBoots(null);
+                break;
+            }
+        }
+        player.sendMessage(DuelsPlugin.instance.getLang().getMessage("ERROR.kit-content-warning"));
+        Log.warn(String.format(WARNING_CONSOLE, player.getName()));
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void on(final PrepareAnvilEvent event) {
+        if (!(event.getView().getPlayer() instanceof Player player)) {
+            return;
+        }
+
+        if (isExcluded(player)) {
+            return;
+        }
+
+        AnvilInventory anvil = event.getInventory();
+        if (anvil.getFirstItem() != null) {
+            ItemStack item = anvil.getFirstItem();
+            if (isKitItem(item)) {
+                event.setResult(null);
+                player.getInventory().remove(item);
+                player.sendMessage(DuelsPlugin.instance.getLang().getMessage("ERROR.kit-content-warning"));
+                Log.warn(String.format(WARNING_CONSOLE, player.getName()));
+                return;
+            }
+        }
+
+        if (anvil.getSecondItem() != null) {
+            ItemStack item = anvil.getSecondItem();
+            if (isKitItem(item)) {
+                event.setResult(null);
+                player.getInventory().remove(item);
+                player.sendMessage(DuelsPlugin.instance.getLang().getMessage("ERROR.kit-content-warning"));
+                Log.warn(String.format(WARNING_CONSOLE, player.getName()));
+            }
+        }
     }
 }

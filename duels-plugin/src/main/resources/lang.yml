@@ -26,6 +26,7 @@ GENERAL:
 
 ERROR:
   no-permission: '{PREFIX} &cNope! You are lacking the following permission: ''%permission%'''
+  kit-content-warning: '{PREFIX} &4Kit contents cannot be used when not in a duel.'
   data:
     load-failure: '{PREFIX} &cCould not load your duel stats. Please try re-logging.'
     not-loaded: '{PREFIX} &cUsers are still under load, please try again later.'
