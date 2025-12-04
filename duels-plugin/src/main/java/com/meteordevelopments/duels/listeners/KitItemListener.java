@@ -41,7 +41,10 @@ public class KitItemListener implements Listener {
 
     private final ArenaManagerImpl arenaManager;
 
+    private final DuelsPlugin plugin;
+
     public KitItemListener(final DuelsPlugin plugin) {
+        this.plugin = plugin;
         this.arenaManager = plugin.getArenaManager();
 
         // Only register listener if enabled in config.yml
@@ -79,7 +82,7 @@ public class KitItemListener implements Listener {
         }
 
         event.setCurrentItem(null);
-        player.sendMessage(DuelsPlugin.instance.getLang().getMessage("ERROR.kit-content-warning"));
+        player.sendMessage(plugin.getLang().getMessage("ERROR.kit-content-warning"));
         Log.warn(String.format(WARNING_CONSOLE, player.getName()));
     }
 
@@ -99,7 +102,7 @@ public class KitItemListener implements Listener {
 
         event.setCancelled(true);
         player.getInventory().remove(item);
-        player.sendMessage(DuelsPlugin.instance.getLang().getMessage("ERROR.kit-content-warning"));
+        player.sendMessage(plugin.getLang().getMessage("ERROR.kit-content-warning"));
         Log.warn(String.format(WARNING_CONSOLE, player.getName()));
     }
 
@@ -119,7 +122,7 @@ public class KitItemListener implements Listener {
 
         event.setCancelled(true);
         item.remove();
-        player.sendMessage(DuelsPlugin.instance.getLang().getMessage("ERROR.kit-content-warning"));
+        player.sendMessage(plugin.getLang().getMessage("ERROR.kit-content-warning"));
         Log.warn(String.format(WARNING_CONSOLE, player.getName()));
     }
 
@@ -139,7 +142,7 @@ public class KitItemListener implements Listener {
 
         event.setCancelled(true);
         player.getInventory().remove(item);
-        player.sendMessage(DuelsPlugin.instance.getLang().getMessage("ERROR.kit-content-warning"));
+        player.sendMessage(plugin.getLang().getMessage("ERROR.kit-content-warning"));
         Log.warn(String.format(WARNING_CONSOLE, player.getName()));
     }
 
@@ -159,7 +162,7 @@ public class KitItemListener implements Listener {
 
         event.setCancelled(true);
         player.getInventory().remove(item);
-        player.sendMessage(DuelsPlugin.instance.getLang().getMessage("ERROR.kit-content-warning"));
+        player.sendMessage(plugin.getLang().getMessage("ERROR.kit-content-warning"));
         Log.warn(String.format(WARNING_CONSOLE, player.getName()));
     }
 
@@ -179,7 +182,7 @@ public class KitItemListener implements Listener {
 
         event.setCancelled(true);
         player.getInventory().remove(item);
-        player.sendMessage(DuelsPlugin.instance.getLang().getMessage("ERROR.kit-content-warning"));
+        player.sendMessage(plugin.getLang().getMessage("ERROR.kit-content-warning"));
         Log.warn(String.format(WARNING_CONSOLE, player.getName()));
     }
 
@@ -216,7 +219,7 @@ public class KitItemListener implements Listener {
                 break;
             }
         }
-        player.sendMessage(DuelsPlugin.instance.getLang().getMessage("ERROR.kit-content-warning"));
+        player.sendMessage(plugin.getLang().getMessage("ERROR.kit-content-warning"));
         Log.warn(String.format(WARNING_CONSOLE, player.getName()));
     }
 
@@ -236,7 +239,7 @@ public class KitItemListener implements Listener {
             if (isKitItem(item)) {
                 event.setResult(null);
                 player.getInventory().remove(item);
-                player.sendMessage(DuelsPlugin.instance.getLang().getMessage("ERROR.kit-content-warning"));
+                player.sendMessage(plugin.getLang().getMessage("ERROR.kit-content-warning"));
                 Log.warn(String.format(WARNING_CONSOLE, player.getName()));
                 return;
             }
@@ -247,7 +250,7 @@ public class KitItemListener implements Listener {
             if (isKitItem(item)) {
                 event.setResult(null);
                 player.getInventory().remove(item);
-                player.sendMessage(DuelsPlugin.instance.getLang().getMessage("ERROR.kit-content-warning"));
+                player.sendMessage(plugin.getLang().getMessage("ERROR.kit-content-warning"));
                 Log.warn(String.format(WARNING_CONSOLE, player.getName()));
             }
         }

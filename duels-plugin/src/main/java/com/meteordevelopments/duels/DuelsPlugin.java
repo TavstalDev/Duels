@@ -66,7 +66,7 @@ public class DuelsPlugin extends JavaPlugin implements Duels, LogSource {
     private UpdateManager updateManager;
 
     @Getter
-    public static DuelsPlugin instance;
+    private static DuelsPlugin instance;
     @Getter
     private static MorePaperLib morePaperLib;
 
